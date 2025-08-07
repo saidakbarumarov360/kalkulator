@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kredit Grafiklari</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 1200px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .input-section {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .input-group {
+            margin: 10px;
+            text-align: center;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .input-group input, .input-group select {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .loan-details {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .detail-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 10px;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .detail-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .detail-card p {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .annuity-color {
+            background-color: #3498db;
+        }
+        
+        .differentiated-color {
+            background-color: #e74c3c;
+        }
+        
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 45%;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .summary-card h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 20px;
+        }
+        
+        .summary-card ul {
+            list-style-type: none;
+        }
+        
+        .summary-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .summary-card li:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .total-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .total-section h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .total-comparison {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        .total-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 10px;
+            min-width: 200px;
+        }
+        
+        .total-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .total-card p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .difference {
+            font-size: 20px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        
+        .table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+        
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .payment-table th, .payment-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        .payment-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .payment-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .payment-table tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        
+        .payment-table td:first-child {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .annuity {
+            color: #3498db;
+        }
+        
+        .differentiated {
+            color: #e74c3c;
+        }
+        
+        .table-header {
+            text-align: center;
+            margin: 30px 0 20px;
+            font-size: 22px;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-card {
+                width: 100%;
+            }
+            
+            .input-group input, .input-group select {
+                width: 150px;
+            }
+            
+            .payment-table {
+                font-size: 14px;
+            }
+            
+            .payment-table th, .payment-table td {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kredit To'lov Usullarini Solishtirish</h1>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="loanAmount">Kredit Miqdori (so'm)</label>
+                <input type="number" id="loanAmount" value="10000000" min="1000000" max="300000000" step="100000">
+            </div>
+            <div class="input-group">
+                <label for="loanTerm">Muddat (oy)</label>
+                <input type="number" id="loanTerm" value="24" min="10" max="48">
+            </div>
+            <div class="input-group">
+                <label for="interestRate">Foiz Stavkasi (%)</label>
+                <select id="interestRate">
+                    <option value="42">42%</option>
+                    <option value="48">48%</option>
+                </select>
+            </div>
+        </div>
+        
+        <button class="calculate-btn" onclick="calculateLoan()">Hisoblash</button>
+        
+        <div class="loan-details" id="loanDetails" style="display: none;">
+            <div class="detail-card">
+                <h3>Kredit Miqdori</h3>
+                <p id="detailAmount">10,000,000 so'm</p>
+            </div>
+            <div class="detail-card">
+                <h3>Foiz Stavkasi</h3>
+                <p id="detailRate">42%</p>
+            </div>
+            <div class="detail-card">
+                <h3>Muddat</h3>
+                <p id="detailTerm">24 oy</p>
+            </div>
+        </div>
+        
+        <div class="legend" id="legend" style="display: none;">
+            <div class="legend-item">
+                <div class="legend-color annuity-color"></div>
+                <span>Annuity Usuli</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color differentiated-color"></div>
+                <span>Diferensial Usuli</span>
+            </div>
+        </div>
+        
+        <div class="chart-container" id="chartContainer" style="display: none;">
+            <canvas id="loanChart"></canvas>
+        </div>
+        
+        <div class="summary" id="summary" style="display: none;">
+            <div class="summary-card">
+                <h3 class="annuity">Annuity Usuli</h3>
+                <ul>
+                    <li>
+                        <span>Oylik To'lov:</span>
+                        <span id="annuityPayment"></span>
+                    </li>
+                    <li>
+                        <span>Jami To'lov:</span>
+                        <span id="annuityTotal"></span>
+                    </li>
+                    <li>
+                        <span>Foiz To'lovlari:</span>
+                        <span id="annuityInterest"></span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="summary-card">
+                <h3 class="differentiated">Diferensial Usuli</h3>
+                <ul>
+                    <li>
+                        <span>Boshlang'ich To'lov:</span>
+                        <span id="diffFirstPayment"></span>
+                    </li>
+                    <li>
+                        <span>Oxirgi To'lov:</span>
+                        <span id="diffLastPayment"></span>
+                    </li>
+                    <li>
+                        <span>Jami To'lov:</span>
+                        <span id="diffTotal"></span>
+                    </li>
+                    <li>
+                        <span>Foiz To'lovlari:</span>
+                        <span id="diffInterest"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="total-section" id="totalSection" style="display: none;">
+            <h2>Jami Summa Solishtirish</h2>
+            <div class="total-comparison">
+                <div class="total-card">
+                    <h3>Annuity Usuli</h3>
+                    <p id="totalAnnuity"></p>
+                </div>
+                <div class="total-card">
+                    <h3>Diferensial Usuli</h3>
+                    <p id="totalDifferentiated"></p>
+                </div>
+            </div>
+            <div class="difference" id="difference"></div>
+        </div>
+        
+        <div class="table-container" id="tableContainer" style="display: none;">
+            <h2 class="table-header">Oylik To'lov Jadvali</h2>
+            <table class="payment-table" id="paymentTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Oy</th>
+                        <th colspan="4" class="annuity">Annuity Usuli</th>
+                        <th colspan="4" class="differentiated">Diferensial Usuli</th>
+                    </tr>
+                    <tr>
+                        <th class="annuity">To'lov</th>
+                        <th class="annuity">Foiz</th>
+                        <th class="annuity">Asosiy Summa</th>
+                        <th class="annuity">Qolgan Qarz</th>
+                        <th class="differentiated">To'lov</th>
+                        <th class="differentiated">Foiz</th>
+                        <th class="differentiated">Asosiy Summa</th>
+                        <th class="differentiated">Qolgan Qarz</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let chart = null;
+        
+        function calculateLoan() {
+            // Kredit parametrlarini olish
+            const principal = parseFloat(document.getElementById('loanAmount').value);
+            const months = parseInt(document.getElementById('loanTerm').value);
+            const annualRate = parseFloat(document.getElementById('interestRate').value);
+            
+            // Validatsiya
+            if (isNaN(principal) || principal < 1000000 || principal > 300000000) {
+                alert("Iltimos, 1 milliondan 300 milliongacha bo'lgan kredit miqdorini kiriting!");
+                return;
+            }
+            
+            if (isNaN(months) || months < 10 || months > 48) {
+                alert("Iltimos, 10 oydan 48 oygacha bo'lgan muddatni kiriting!");
+                return;
+            }
+            
+            if (isNaN(annualRate) || (annualRate !== 42 && annualRate !== 48)) {
+                alert("Iltimos, foiz stavkasini tanlang (42% yoki 48%)!");
+                return;
+            }
+            
+            // Oylik foiz stavkasi
+            const monthlyRate = annualRate / 100 / 12;
+            
+            // Annuity to'lov hisoblash
+            const annuityPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+                                   (Math.pow(1 + monthlyRate, months) - 1);
+            
+            // Annuity usuli bo'yicha qolgan qarzni hisoblash
+            let annuityBalance = principal;
+            const annuityBalances = [principal];
+            const annuityPayments = [];
+            const annuityInterests = [];
+            const annuityPrincipals = [];
+            
+            for (let i = 1; i <= months; i++) {
+                const interestPayment = annuityBalance * monthlyRate;
+                const principalPayment = annuityPayment - interestPayment;
+                annuityBalance -= principalPayment;
+                
+                annuityBalances.push(annuityBalance);
+                annuityPayments.push(annuityPayment);
+                annuityInterests.push(interestPayment);
+                annuityPrincipals.push(principalPayment);
+            }
+            
+            // Diferensial to'lov hisoblash
+            const principalPayment = principal / months;
+            let differentiatedBalance = principal;
+            const differentiatedBalances = [principal];
+            const differentiatedPayments = [];
+            const differentiatedInterests = [];
+            const differentiatedPrincipals = [];
+            
+            for (let i = 1; i <= months; i++) {
+                const interestPayment = differentiatedBalance * monthlyRate;
+                const totalPayment = principalPayment + interestPayment;
+                differentiatedBalance -= principalPayment;
+                
+                differentiatedBalances.push(differentiatedBalance);
+                differentiatedPayments.push(totalPayment);
+                differentiatedInterests.push(interestPayment);
+                differentiatedPrincipals.push(principalPayment);
+            }
+            
+            // Jami to'lovlar hisoblash
+            const annuityTotal = annuityPayment * months;
+            const annuityInterest = annuityTotal - principal;
+            
+            const differentiatedTotal = differentiatedPayments.reduce((sum, payment) => sum + payment, 0);
+            const differentiatedInterest = differentiatedTotal - principal;
+            
+            // Ma'lumotlarni ko'rsatish
+            document.getElementById('detailAmount').textContent = principal.toLocaleString('uz-UZ') + ' so\'m';
+            document.getElementById('detailRate').textContent = annualRate + '%';
+            document.getElementById('detailTerm').textContent = months + ' oy';
+            
+            document.getElementById('annuityPayment').textContent = annuityPayment.toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+            document.getElementById('annuityTotal').textContent = annuityTotal.toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+            document.getElementById('annuityInterest').textContent = annuityInterest.toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+            
+            document.getElementById('diffFirstPayment').textContent = differentiatedPayments[0].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+            document.getElementById('diffLastPayment').textContent = differentiatedPayments[months-1].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+            document.getElementById('diffTotal').textContent = differentiatedTotal.toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+            document.getElementById('diffInterest').textContent = differentiatedInterest.toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+            
+            document.getElementById('totalAnnuity').textContent = annuityTotal.toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+            document.getElementById('totalDifferentiated').textContent = differentiatedTotal.toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+            
+            const difference = Math.abs(annuityTotal - differentiatedTotal);
+            const betterMethod = annuityTotal < differentiatedTotal ? 'Annuity' : 'Diferensial';
+            document.getElementById('difference').textContent = 
+                `Farqi: ${difference.toLocaleString('uz-UZ', {maximumFractionDigits: 0})} so'm (${betterMethod} usuli foydaliroq)`;
+            
+            // Bo'limlarni ko'rsatish
+            document.getElementById('loanDetails').style.display = 'flex';
+            document.getElementById('legend').style.display = 'flex';
+            document.getElementById('chartContainer').style.display = 'block';
+            document.getElementById('summary').style.display = 'flex';
+            document.getElementById('totalSection').style.display = 'block';
+            document.getElementById('tableContainer').style.display = 'block';
+            
+            // Grafikni yaratish yoki yangilash
+            const ctx = document.getElementById('loanChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: months}, (_, i) => i + 1),
+                    datasets: [
+                        {
+                            label: 'Annuity Usuli',
+                            data: annuityBalances.slice(1),
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#3498db',
+                            pointRadius: 4,
+                            tension: 0.1,
+                            fill: true
+                        },
+                        {
+                            label: 'Diferensial Usuli',
+                            data: differentiatedBalances.slice(1),
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#e74c3c',
+                            pointRadius: 4,
+                            tension: 0.1,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Kredit Qaytish Grafigi',
+                            font: {
+                                size: 18
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Oylar'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Qolgan Qarz (so\'m)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('uz-UZ');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Jadvalni to'ldirish
+            const tableBody = document.getElementById('paymentTableBody');
+            tableBody.innerHTML = '';
+            
+            for (let i = 0; i < months; i++) {
+                const row = document.createElement('tr');
+                
+                // Oy raqami
+                const monthCell = document.createElement('td');
+                monthCell.textContent = i + 1;
+                row.appendChild(monthCell);
+                
+                // Annuity to'lov
+                const annuityPaymentCell = document.createElement('td');
+                annuityPaymentCell.textContent = annuityPayments[i].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+                annuityPaymentCell.className = 'annuity';
+                row.appendChild(annuityPaymentCell);
+                
+                // Annuity foiz
+                const annuityInterestCell = document.createElement('td');
+                annuityInterestCell.textContent = annuityInterests[i].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+                annuityInterestCell.className = 'annuity';
+                row.appendChild(annuityInterestCell);
+                
+                // Annuity asosiy summa
+                const annuityPrincipalCell = document.createElement('td');
+                annuityPrincipalCell.textContent = annuityPrincipals[i].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+                annuityPrincipalCell.className = 'annuity';
+                row.appendChild(annuityPrincipalCell);
+                
+                // Annuity qolgan qarz
+                const annuityBalanceCell = document.createElement('td');
+                annuityBalanceCell.textContent = annuityBalances[i+1].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+                annuityBalanceCell.className = 'annuity';
+                row.appendChild(annuityBalanceCell);
+                
+                // Diferensial to'lov
+                const diffPaymentCell = document.createElement('td');
+                diffPaymentCell.textContent = differentiatedPayments[i].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+                diffPaymentCell.className = 'differentiated';
+                row.appendChild(diffPaymentCell);
+                
+                // Diferensial foiz
+                const diffInterestCell = document.createElement('td');
+                diffInterestCell.textContent = differentiatedInterests[i].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+                diffInterestCell.className = 'differentiated';
+                row.appendChild(diffInterestCell);
+                
+                // Diferensial asosiy summa
+                const diffPrincipalCell = document.createElement('td');
+                diffPrincipalCell.textContent = differentiatedPrincipals[i].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+                diffPrincipalCell.className = 'differentiated';
+                row.appendChild(diffPrincipalCell);
+                
+                // Diferensial qolgan qarz
+                const diffBalanceCell = document.createElement('td');
+                diffBalanceCell.textContent = differentiatedBalances[i+1].toLocaleString('uz-UZ', {maximumFractionDigits: 0}) + ' so\'m';
+                diffBalanceCell.className = 'differentiated';
+                row.appendChild(diffBalanceCell);
+                
+                tableBody.appendChild(row);
+            }
+        }
+        
+        // Sahifa yuklanganda avtomatik hisoblash
+        window.onload = function() {
+            calculateLoan();
+        };
+    </script>
+</body>
+</html>
